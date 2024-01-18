@@ -13,7 +13,7 @@
       <Button layoutX="55.0" layoutY="430.0" mnemonicParsing="false" onAction="#btnGetStartOnAction" prefHeight="25.0" prefWidth="177.0" style="-fx-background-radius: 20; -fx-background-color: #15143d;" text="Get Start" textFill="WHITE" />
       <ImageView fitHeight="114.0" fitWidth="126.0" layoutX="83.0" layoutY="40.0">
          <image>
-            <Image url="@../java/org/example/Asate/GrouChat.gif" />
+            <Image url="@../Asate/GrouChat.gif" />
          </image>
       </ImageView>
       <Label layoutX="96.0" layoutY="194.0" prefHeight="27.0" prefWidth="103.0" text="WELCOME">

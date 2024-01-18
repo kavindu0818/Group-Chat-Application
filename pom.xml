@@ -24,6 +24,15 @@
             <artifactId>javafx-fxml</artifactId>
             <version>19.0.2.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.vdurmont/semver4j -->
+        <!-- https://mvnrepository.com/artifact/org.molgenis/molgenis-data-import -->
+        <dependency>
+            <groupId>org.molgenis</groupId>
+            <artifactId>molgenis-data-import</artifactId>
+            <version>8.4.5</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>
