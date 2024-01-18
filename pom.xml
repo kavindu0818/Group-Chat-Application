@@ -26,11 +26,19 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.vdurmont/semver4j -->
         <!-- https://mvnrepository.com/artifact/org.molgenis/molgenis-data-import -->
+        <!-- https://mvnrepository.com/artifact/com.vdurmont/semver4j -->
+        <!-- https://mvnrepository.com/artifact/com.vdurmont/emoji-java -->
+        <!-- https://mvnrepository.com/artifact/com.vdurmont/emoji-java -->
+        <!-- https://mvnrepository.com/artifact/com.vdurmont/emoji-java -->
         <dependency>
-            <groupId>org.molgenis</groupId>
-            <artifactId>molgenis-data-import</artifactId>
-            <version>8.4.5</version>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>4.0.0</version>
         </dependency>
+        <!-- Thanks for using https://jar-download.com -->
+
+
+
 
 
     </dependencies>
