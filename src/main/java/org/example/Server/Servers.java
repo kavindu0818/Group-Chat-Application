@@ -4,29 +4,34 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Servers {
-        private  ArrayList<ClientServer> clientsList = new ArrayList<>();
 
-        public void main(String[] args) {
-            try (ServerSocket serverSocket = new ServerSocket(3001)) {
-                System.out.println("Server started!");
+    private ServerSocket serverSocket;
+    private Socket socket;
+    private static Servers servers;
 
-                while (true) {
-                    try {
-                        Socket socket = serverSocket.accept();
-                        System.out.println("New client connected!");
+    private List<ClientServer> clients = new ArrayList<>();
 
-                        ClientServer clients = new ClientServer(socket, clientsList);
-                        clientsList.add(clients);
-                        clients.start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (IOException e) {
+    private Servers() throws IOException {
+        serverSocket = new ServerSocket(3001);
+    }
+
+    public static Servers getInstance() throws IOException {
+        return servers!=null? servers:(servers=new Servers());
+    }
+
+    public void makeSocket(){
+        while (!serverSocket.isClosed()){
+            try{
+                socket = serverSocket.accept();
+                ClientServer clientHandler = new ClientServer(socket,clients);
+                clients.add(clientHandler);
+                System.out.println("client socket accepted "+socket.toString());
+            } catch (IOException e){
                 e.printStackTrace();
             }
         }
     }
-
+}
