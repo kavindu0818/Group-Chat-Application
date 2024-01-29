@@ -16,8 +16,18 @@ public class LoginFormController {
 
   public static String clientName = "Client";
 
-    public void btnOpenBrowserOnAction(ActionEvent actionEvent) {
-    }
+  //private ClientFormController clientFormController = new ClientFormController();
+
+//    public void btnOpenBrowserOnAction(ActionEvent actionEvent) throws IOException {
+//        FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+//        dialog.setMode(FileDialog.LOAD);
+//        dialog.setVisible(true);
+//        String file = dialog.getDirectory()+dialog.getFile();
+//        dialog.dispose();
+//        clientFormController.sendImageUser(file);
+//        System.out.println(file + " chosen.");
+//
+//    }
 
     public void btnChatStrartOnAction(ActionEvent actionEvent) throws IOException {
         clientName = txtUserName.getText();
@@ -38,5 +48,7 @@ public class LoginFormController {
     }
 
 
+    public void btnOpenBrowserOnAction(ActionEvent actionEvent) {
+    }
 }
 

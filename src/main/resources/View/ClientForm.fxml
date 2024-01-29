@@ -10,16 +10,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ancClientForm" prefHeight="524.0" prefWidth="381.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller.ClientFormController">
+<AnchorPane fx:id="ancClientForm" prefHeight="518.0" prefWidth="382.0" style="-fx-background-color: #ccd4db;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller.ClientFormController">
    <children>
       <AnchorPane prefHeight="77.0" prefWidth="382.0" style="-fx-background-color: #0c0b40;">
          <children>
-            <Label fx:id="lblUserName" layoutX="147.0" layoutY="15.0" prefHeight="32.0" prefWidth="128.0" textFill="#f8eeee">
+            <Label fx:id="lblUserName" layoutX="140.0" layoutY="15.0" prefHeight="35.0" prefWidth="220.0" textFill="#f8eeee">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
             <Label layoutX="143.0" layoutY="42.0" prefHeight="17.0" prefWidth="62.0" text="Active now" textFill="#fcf7f7" />
+            <ImageView fx:id="userImage" fitHeight="57.0" fitWidth="73.0" layoutX="61.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </AnchorPane>
       <ScrollPane fx:id="ScrollPaneMsgArea" layoutX="9.0" layoutY="82.0" prefHeight="387.0" prefWidth="357.0">
@@ -27,24 +28,24 @@
             <VBox fx:id="msgVbox" prefHeight="380.0" prefWidth="340.0" />
          </content>
       </ScrollPane>
-      <Label layoutX="11.0" layoutY="479.0" prefHeight="32.0" prefWidth="364.0" style="-fx-background-radius: 20; -fx-background-color: #dfdff0;" />
+      <Label layoutX="11.0" layoutY="479.0" prefHeight="32.0" prefWidth="364.0" style="-fx-background-radius: 20; -fx-background-color: #c0d6eb;" />
       <TextField fx:id="txtMsgType" layoutX="46.0" layoutY="483.0" prefHeight="25.0" prefWidth="254.0" promptText="Type message" />
       <Button fx:id="emojibuttonId" layoutX="20.0" layoutY="483.0" mnemonicParsing="false" onAction="#btnImojiOnAction" prefHeight="25.0" prefWidth="25.0" />
       <Button fx:id="imgSelectBtn" layoutX="304.0" layoutY="483.0" mnemonicParsing="false" onAction="#btnGalleryOnAction" prefHeight="25.0" prefWidth="25.0" />
       <Button layoutX="334.0" layoutY="483.0" mnemonicParsing="false" onAction="#btnSendOnAction" prefHeight="25.0" prefWidth="25.0" />
-      <ImageView fx:id="emjiButton" fitHeight="25.0" fitWidth="25.0" layoutX="20.0" layoutY="483.0">
+      <ImageView fx:id="emjiButton" fitHeight="17.0" fitWidth="24.0" layoutX="21.0" layoutY="487.0">
          <image>
             <Image url="@../Asate/Imoji.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="25.0" fitWidth="25.0" layoutX="334.0" layoutY="482.0">
+      <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="339.0" layoutY="486.0">
          <image>
-            <Image url="@../Asate/msgSendIcon.png" />
+            <Image url="@../Asate/msgSend2.png" />
          </image>
       </ImageView>
-      <ImageView layoutX="305.0" layoutY="483.0">
+      <ImageView fitHeight="17.0" fitWidth="17.0" layoutX="307.0" layoutY="487.0">
          <image>
-            <Image url="@../Asate/Gallery.png" />
+            <Image url="@../Asate/attachment-icon-removebg-preview.png" />
          </image>
       </ImageView>
    </children>

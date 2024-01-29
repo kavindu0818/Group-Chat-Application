@@ -1,6 +1,8 @@
 package org.example.Server;
 
 
+import org.example.Controller.ClientFormController;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,6 +16,8 @@ public class ClientServer extends Thread {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private String msg = "";
+
+    ClientFormController clientFormController = new ClientFormController();
 
     public ClientServer(Socket socket, List<ClientServer> clients) {
         try {
@@ -31,6 +35,7 @@ public class ClientServer extends Thread {
                 try {
                     while (socket.isConnected()) {
                         msg = dataInputStream.readUTF();
+
                         for (ClientServer clientHandler : clients) {
                             if (clientHandler.socket.getPort() != socket.getPort()) {
                                 clientHandler.dataOutputStream.writeUTF(msg);
@@ -42,7 +47,7 @@ public class ClientServer extends Thread {
                     e.printStackTrace();
                 }
             }
-        }).start();
+            }).start();
     }
     }
 

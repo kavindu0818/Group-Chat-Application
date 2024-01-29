@@ -35,7 +35,16 @@
             <artifactId>emoji-java</artifactId>
             <version>4.0.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.lilyproject/lily-import -->
+
+
         <!-- Thanks for using https://jar-download.com -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>17</version>
+        </dependency>
 
 
 
