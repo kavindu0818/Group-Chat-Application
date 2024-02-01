@@ -1,16 +1,11 @@
 package org.example.Controller;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -19,15 +14,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.example.ClientHandle;
 import org.example.EmojiPicker;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,7 +49,7 @@ public class ClientFormController {
 
     ServerFormController serverFormController = new ServerFormController();
 
-    private String cName = loginFormController.sendUserName();
+    private String cName;
 
     private ArrayList<ClientFormController> clients;
     private BufferedReader bufferedReader;
@@ -64,7 +59,10 @@ public class ClientFormController {
     ClientHandle clientHandle;
     String receivingMsg = null;
 
+    String msg;
+
     public void initialize() {
+        cName=loginFormController.sendUserName();
         lblUserName.setText(loginFormController.sendUserName());
 
         new Thread(new Runnable() {
@@ -72,58 +70,86 @@ public class ClientFormController {
             public void run() {
                 try {
                     socket = new Socket("localhost", 3001);
-                    dataInputStream = new DataInputStream(socket.getInputStream());
-                    dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+                  //  dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     System.out.println("Client connected");
-                    serverFormController.receiveMessage(cName + " joined.");
+                    System.out.println(cName + "join");
+                    dataInputStream = new DataInputStream(socket.getInputStream());
+                  //  serverFormController.receiveMessage(cName + " joined.");
 
-                    while (socket.isConnected()) {
-                        String messageType = dataInputStream.readUTF();
+                    while (true) {
+                        String type = dataInputStream.readUTF();
+                        if (type.equals("img")) {
 
+                            receiveImage(dataInputStream);
 
-                             receiveMessage(messageType, ClientFormController.this.msgVbox);
-//                        if (messageType.equalsIgnoreCase("image")) {
-//                            int imageSize = dataInputStream.readInt();
-//                            byte[] imageBytes = new byte[imageSize];
-//                            dataInputStream.readFully(imageBytes);
-//
-//                            Image image = convertBytesToJavaFXImage(imageBytes);
-//                            receiveImage(image);
-//                        }
+                        }else {
+                           // System.out.println("sms");
+                            String sms = type;
+                            System.out.println("print" + sms);
+                            receiveMessage(sms,msgVbox);
+                        }
                     }
-                } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                    }
-
-
-            }).start();
-
-        this.msgVbox.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                ScrollPaneMsgArea.setVvalue((Double) newValue);
             }
+        }).start();
+
+        this.msgVbox.heightProperty().addListener((observableValue, oldValue, newValue) -> {
+            ScrollPaneMsgArea.setVvalue(newValue.doubleValue());
         });
 
         emoji();
-
     }
 
-    public void receiveImage(Image ima){
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(100);
-        imageView.setFitWidth(100);
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.setPadding(new Insets(5, 5, 5, 10));
-        hBox.getChildren().add(imageView);
+    public void receiveImage(DataInputStream dataInputStream) {
+        //Image image = new Image(image3);
+        try {
 
-        Platform.runLater(() -> msgVbox.getChildren().add(hBox));
+           // String name = dataInputStream.readUTF();
+            //The dis.read() method reads the length of the image data
+            int imageDataLength = dataInputStream.readInt();
+            //Creating a byte array using the length of the image data
+            byte[] imageData = new byte[imageDataLength];
+            dataInputStream.readFully(imageData);
+
+            //Converting the byte array to a buffered image object
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+            BufferedImage bufferedImage = ImageIO.read(bais);
+
+            //Convert BufferedImage to JavaFX Image
+            Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+
+           // String cn = dataInputStream.readUTF();
+//            System.out.println("1234" + name);
+//
+//            Text text = new Text(name);
+//
+//            HBox hBoxName = new HBox(text);
+//            hBoxName.setAlignment(Pos.CENTER_LEFT);
+//            Text textName = new Text();
+//            TextFlow textFlowName = new TextFlow(textName);
+//            hBoxName.getChildren().add(textFlowName);
+            // Create an ImageView with the Image
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(100);
+            imageView.setFitHeight(100);
+
+            //ADD A scroll pane to the image container
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setContent(imageView);
+
+            //Append the ImageView to the imageContainer
+            Platform.runLater(() -> msgVbox.getChildren().add(imageView));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public byte[] imagenToByte(Image imgId) {
+
+
+        public byte[] imagenToByte(Image imgId) {
         BufferedImage bufferimage = SwingFXUtils.fromFXImage(imgId, null);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -183,8 +209,6 @@ public class ClientFormController {
 
     private void sendMsg(String msgToSend) {
         if (!msgToSend.isEmpty()) {
-            if (!msgToSend.matches(".*\\.(png|jpe?g|gif)$")) {
-
                 HBox hBox = new HBox();
                 hBox.setAlignment(Pos.CENTER_RIGHT);
                 hBox.setPadding(new javafx.geometry.Insets(5, 5, 0, 10));
@@ -214,6 +238,7 @@ public class ClientFormController {
 
 
                 try {
+                    dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     dataOutputStream.writeUTF(cName + "-" + msgToSend);
                     dataOutputStream.flush();
                 } catch (IOException e) {
@@ -223,35 +248,38 @@ public class ClientFormController {
                 txtMsgType.clear();
             }
         }
-    }
+
 
     private void sendImage(String photo) throws IOException {
-        Image image = new Image(photo);
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(200);
-        imageView.setFitWidth(200);
-//        TextFlow textFlow = new TextFlow(imageView);
+        Image image = new Image("file:" + photo);
+
         HBox hBox = new HBox();
-        hBox.setPadding(new javafx.geometry.Insets(5,5,5,10));
+        hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(50);
+        imageView.setFitWidth(50);
+
         hBox.getChildren().add(imageView);
-        hBox.setAlignment(Pos.CENTER_RIGHT);
 
         msgVbox.getChildren().add(hBox);
 
         try {
-            byte[] bIma = imagenToByte(image);
+            byte[] imageBytes = imagenToByte(image);
 
-            // Send the image type and size first
             dataOutputStream.writeUTF("image");
-            dataOutputStream.writeInt(bIma.length);
-            dataOutputStream.flush();
-
-            // Send the image data
-            dataOutputStream.write(bIma);
+            dataOutputStream.writeInt(imageBytes.length);
+            dataOutputStream.write(imageBytes);
             dataOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+    }
+
+    public void handleImage(String image) {
+
     }
 
 
@@ -279,13 +307,13 @@ public class ClientFormController {
                 vBox.getChildren().add(hBox);
             });
 
-        }else {
+        } else {
             String name = msg.split("-")[0];
             String msgFromServer = msg.split("-")[1];
 
             HBox hBox = new HBox();
             hBox.setAlignment(Pos.CENTER_LEFT);
-            hBox.setPadding(new javafx.geometry.Insets(5,5,5,10));
+            hBox.setPadding(new javafx.geometry.Insets(5, 5, 5, 10));
 
             HBox hBoxName = new HBox();
             hBoxName.setAlignment(Pos.CENTER_LEFT);
@@ -296,8 +324,8 @@ public class ClientFormController {
             Text text = new Text(msgFromServer);
             TextFlow textFlow = new TextFlow(text);
             textFlow.setStyle("-fx-background-color: #abb8c3; -fx-font-weight: bold; -fx-background-radius: 20px");
-            textFlow.setPadding(new Insets(5,10,5,10));
-            text.setFill(Color.color(0,0,0));
+            textFlow.setPadding(new Insets(5, 10, 5, 10));
+            text.setFill(Color.color(0, 0, 0));
 
             hBox.getChildren().add(textFlow);
 
@@ -309,7 +337,9 @@ public class ClientFormController {
                 }
             });
         }
-    }
+
+        }
+
 
 
     public void btnImojiOnAction(ActionEvent actionEvent) {
@@ -317,15 +347,84 @@ public class ClientFormController {
     }
 
     public void btnGalleryOnAction(ActionEvent actionEvent) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Image File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
 
-        FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
-        dialog.setMode(FileDialog.LOAD);
-        dialog.setVisible(true);
-        String file = dialog.getDirectory()+dialog.getFile();
-        dialog.dispose();
-        sendImage(file);
+        Stage stage = (Stage) imgSelectBtn.getScene().getWindow();
+        File image = fileChooser.showOpenDialog(stage);
+        if (image != null) {
+            try {
+                //Reading the image!
+                // Reads the contents of the image file and creates a BufferedImage object called bufferedImage
+                BufferedImage bufferedImage = ImageIO.read(image);
+
+                //This line creates a ByteArrayOutputStream object called byteArrayOutputStream. This stream is used to write the image data as bytes
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+                //This line writes the image data from the bufferedImage to the byteArrayOutputStream. The ImageIO.write() method takes three parameters: the image to be written (bufferedImage), the format of the image ("jpg" in this case), and the output stream to which the image data will be written (byteArrayOutputStream)
+                ImageIO.write(bufferedImage, "jpg", byteArrayOutputStream);
+
+                //Below line can get the byte image data from the byteArrayOutPutStream and convert it to a byte array
+                byte[] imageData = byteArrayOutputStream.toByteArray();
+
+                //Sending the image through output stream
+//                DataOutputStream dos2 = new DataOutputStream(socket.getOutputStream());
+                //Letting the server know an image is being sent
+                DataOutputStream dataOutputStream1 = new DataOutputStream(socket.getOutputStream());
+                dataOutputStream1.writeUTF("img");
+               // dataOutputStream1.writeUTF(cName);
+                //Writing the length of the image data
+                dataOutputStream1.writeInt(imageData.length);
+                dataOutputStream1.write(imageData);
+                dataOutputStream1.flush();
+
+
+                //Appending the image to the text area
+                // Convert the image data to an Image
+                ByteArrayInputStream imageStream = new ByteArrayInputStream(imageData);
+                Image image1 = new Image(imageStream);
+
+                // Convert BufferedImage to JavaFX Image
+                Image image2 = SwingFXUtils.toFXImage(bufferedImage, null);
+
+                // Create an ImageView with the Image
+                ImageView imageView = new ImageView(image2);
+                imageView.setPreserveRatio(true);
+                imageView.setFitWidth(100);
+                imageView.setFitHeight(100);
+
+
+                HBox hBox = new HBox();
+                hBox.setAlignment(Pos.CENTER_RIGHT);
+                hBox.setPadding(new Insets(5, 5, 5, 10));
+                hBox.getChildren().add(imageView);
+
+
+                //ADD A scroll pane to the image container
+                ScrollPane scrollPane = new ScrollPane();
+                scrollPane.setContent(hBox);
+
+                // Append the ImageView to the imageContainer
+                Platform.runLater(() -> msgVbox.getChildren().add(hBox));
+
+
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Error while reading the image data !");
+                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                alertStage.getScene().getStylesheets().add(getClass().getResource("/style/notification.css").toExternalForm());
+                alert.showAndWait();
+            }
+
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error while selecting the image !");
+            Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+            alertStage.getScene().getStylesheets().add(getClass().getResource("/style/notification.css").toExternalForm());
+            alert.showAndWait();
+        }
     }
-
 
     public void btnSendOnAction(ActionEvent actionEvent) {
         sendMsg(txtMsgType.getText());
